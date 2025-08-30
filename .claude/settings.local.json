@@ -3,7 +3,8 @@
     "allow": [
       "Bash(rd:*)",
       "Bash(Remove-Item -Recurse -Force modulesdocument_conversion)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
