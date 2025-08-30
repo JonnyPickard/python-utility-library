@@ -4,7 +4,16 @@
       "Bash(rd:*)",
       "Bash(Remove-Item -Recurse -Force modulesdocument_conversion)",
       "Bash(powershell:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(dir scripts)",
+      "Bash(dir)",
+      "Bash(python:*)",
+      "Bash(pyenv:*)",
+      "Bash(venvScriptsactivate.bat)",
+      "Bash(pip install:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

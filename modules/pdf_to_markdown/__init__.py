@@ -7,4 +7,4 @@ Supports batch processing of PDFs from input folder to output folder.
 
 from .converter import PDFToMarkdownConverter
 
-__all__ = ['PDFToMarkdownConverter']
+__all__ = ["PDFToMarkdownConverter"]
