@@ -1,32 +1,76 @@
 # Python Utility Library
 
-A focused utility library for PDF to Markdown conversion using the Marker library.
+A modular framework for Python-based document processing and utility tools. Built with a locality-of-behavior architecture where each utility module is self-contained with its own inputs, outputs, tests, and scripts.
 
-## Project Structure
+## Current Utilities
 
-```
+- **PDF to Markdown**: GPU-accelerated conversion using AI models (Marker library)
+
+## Planned Utilities
+
+- **RST to SQL**: Parse reStructuredText documentation and convert to searchable SQL database
+- **Document Analysis**: Extract metadata, structure, and content from various document formats
+- **Text Processing**: Advanced text manipulation and transformation utilities
+
+## Architecture
+
+Each utility module follows a consistent **locality-of-behavior** pattern:
+
+```txt
 python-utility-library/
+├── .claude/                      # Claude Code configuration
+├── .vscode/                      # VSCode settings and launch configs
+├── docs/                         # Documentation and research
+├── modules/                      # Utility modules
+│   ├── __init__.py
+│   └── pdf_to_markdown/          # PDF to Markdown utility
+│       ├── __init__.py
+│       ├── converter.py          # Core PDFToMarkdownConverter class
+│       ├── run_single.py         # Interactive single file conversion
+│       ├── run_batch.py          # Interactive batch conversion
+│       ├── inputs/               # Input PDFs (gitignored content)
+│       │   └── .gitkeep
+│       ├── outputs/              # Generated markdown (gitignored content)
+│       │   └── .gitkeep
+│       └── tests/                # Unit tests with mocking
+│           ├── __init__.py
+│           └── test_converter.py
+├── scripts/                      # Development scripts
+│   ├── setup_venv.bat
+│   ├── setup_venv.ps1
+│   ├── install_deps.bat
+│   ├── lint_code.bat
+│   └── run_tests.bat
+├── venv/                         # Virtual environment (gitignored)
+├── CLAUDE.md                     # Development workflow guidance
 ├── README.md
-├── requirements.txt
-├── requirements-dev.txt
-├── .gitignore
-├── .python-version
-├── setup.py
-├── pyproject.toml
-└── modules/
-    └── pdf_to_markdown/
-        ├── __init__.py
-        ├── converter.py
-        ├── inputs/          # Place PDF files here
-        ├── outputs/         # Markdown files will be created here
-        └── tests/
-            ├── __init__.py
-            └── test_converter.py
+├── requirements.txt              # Core dependencies
+├── requirements-dev.txt          # Development dependencies
+├── pyproject.toml                # Project configuration
+└── setup.py                     # Package setup
+
+# Future module example:
+# └── rst_to_sql/                 # RST documentation parser
+#     ├── __init__.py
+#     ├── parser.py               # docutils-based RST parsing
+#     ├── database.py             # SQL database operations
+#     ├── run_convert.py          # Interactive conversion script
+#     ├── inputs/                 # RST files (gitignored)
+#     ├── outputs/                # SQL dumps (gitignored)
+#     └── tests/                  # Unit tests
 ```
+
+**Key Principles:**
+
+- **Self-contained modules**: Each utility manages its own dependencies, data, and tests
+- **Consistent structure**: All modules follow the same organizational pattern
+- **Private data**: Input/output directories are gitignored for project-specific content
+- **GPU acceleration**: Leverages modern hardware when available
 
 ## Setup
 
 1. **Create virtual environment:**
+
    ```bash
    python -m venv venv
    venv\Scripts\activate  # Windows
@@ -35,12 +79,14 @@ python-utility-library/
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
    ```
 
 3. **Install in development mode:**
+
    ```bash
    pip install -e .
    ```
@@ -100,6 +146,7 @@ pytest modules/pdf_to_markdown/tests/
 ## Development
 
 This project uses:
+
 - Python 3.9+
 - pytest for testing
 - black for code formatting
@@ -109,16 +156,19 @@ This project uses:
 ### Code Style
 
 Format code with black:
+
 ```bash
 black modules/
 ```
 
 Check code with flake8:
+
 ```bash
 flake8 modules/
 ```
 
 Type check with mypy:
+
 ```bash
 mypy modules/
 ```
