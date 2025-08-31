@@ -13,7 +13,14 @@
       "Bash(venvScriptsactivate.bat)",
       "Bash(pip install:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(call venvScriptsactivate.bat)",
+      "Bash(source:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(git rm:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

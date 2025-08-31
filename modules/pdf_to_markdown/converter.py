@@ -3,34 +3,36 @@ PDF to Markdown converter using the Marker library.
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 import logging
 
 try:
-    from marker.converters.pdf import PdfConverter
-    from marker.models import create_model_dict
-    from marker.output import text_from_rendered
+    # External package without type stubs; silence mypy for these imports
+    from marker.converters.pdf import PdfConverter  # type: ignore
+    from marker.models import create_model_dict  # type: ignore
+    from marker.output import text_from_rendered  # type: ignore
 except ImportError:
     raise ImportError(
         "marker-pdf library is required. Install with: pip install marker-pdf"
     )
 
-class PDFToMarkdownConverter:
-    """
-    Converts PDF files to Markdown using the Marker library.
 
-    Supports single file conversion and batch processing from input to output folders.
+class PDFToMarkdownConverter:
+    """Converts PDF files to Markdown using the Marker library.
+
+    Supports single-file conversion and batch processing from an input
+    folder to an output folder.
     """
 
     def __init__(self, config: Optional[dict] = None):
-        """
-        Initialize the converter.
+        """Initialize the converter.
 
         Args:
-            config: Optional configuration dict for Marker. If None, uses default.
+            config: Optional configuration dict for Marker. If
+                None, uses defaults provided by Marker.
         """
         self.config = config
-        self._converter = None
+        self._converter: Any = None
         self.logger = logging.getLogger(__name__)
 
     def _get_converter(self):
@@ -40,13 +42,20 @@ class PDFToMarkdownConverter:
             try:
                 # Set up GPU acceleration if available
                 import os
+
                 try:
                     import torch
+
                     if torch.cuda.is_available():
                         os.environ["TORCH_DEVICE"] = "cuda"
                         device_name = torch.cuda.get_device_name()
-                        vram = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-                        self.logger.info(f"Using GPU acceleration: {device_name} ({vram:.1f}GB VRAM)")
+                        props = torch.cuda.get_device_properties(0)
+                        vram = props.total_memory / (1024**3)
+                        self.logger.info(
+                            "Using GPU acceleration: %s (%.1fGB VRAM)",
+                            device_name,
+                            vram,
+                        )
                     else:
                         self.logger.info("CUDA not available, using CPU")
                 except ImportError:
@@ -59,7 +68,7 @@ class PDFToMarkdownConverter:
                 )
                 self.logger.info("Converter loaded successfully")
             except Exception as e:
-                self.logger.error(f"Failed to load converter: {str(e)}")
+                self.logger.error("Failed to load converter: %s", str(e))
                 raise
         return self._converter
 
@@ -70,9 +79,9 @@ class PDFToMarkdownConverter:
         Convert a single PDF file to Markdown.
 
         Args:
-            pdf_path: Path to the input PDF file
-            output_path: Path for the output Markdown file.
-                If None, uses same name with .md extension
+            pdf_path: Path to the input PDF file.
+            output_path: Path for the output Markdown file. If None,
+                uses the same name with a .md extension.
 
         Returns:
             Path to the output Markdown file
@@ -90,7 +99,7 @@ class PDFToMarkdownConverter:
         else:
             output_path_obj = Path(output_path)
 
-        self.logger.info(f"Converting {pdf_path_obj} to {output_path_obj}")
+        self.logger.info("Converting %s to %s", pdf_path_obj, output_path_obj)
 
         try:
             converter = self._get_converter()
@@ -104,11 +113,11 @@ class PDFToMarkdownConverter:
             with open(output_path_obj, "w", encoding="utf-8") as f:
                 f.write(markdown_text)
 
-            self.logger.info(f"Successfully converted to {output_path_obj}")
+            self.logger.info("Successfully converted to %s", output_path_obj)
             return str(output_path_obj)
 
         except Exception as e:
-            self.logger.error(f"Failed to convert {pdf_path_obj}: {str(e)}")
+            self.logger.error("Failed to convert %s: %s", pdf_path_obj, str(e))
             raise
 
     def convert_folder(
@@ -132,7 +141,8 @@ class PDFToMarkdownConverter:
         output_folder_obj = Path(output_folder)
 
         if not input_folder_obj.exists():
-            raise FileNotFoundError(f"Input folder not found: {input_folder_obj}")
+            msg = f"Input folder not found: {input_folder_obj}"
+            raise FileNotFoundError(msg)
 
         # Create output folder if it doesn't exist
         output_folder_obj.mkdir(parents=True, exist_ok=True)
@@ -155,14 +165,15 @@ class PDFToMarkdownConverter:
                 continue
 
             try:
-                converted_path = self.convert_single_file(str(pdf_file), str(output_file))
+                converted_path = self.convert_single_file(
+                    str(pdf_file), str(output_file)
+                )
                 converted_files.append(converted_path)
             except Exception as e:
-                self.logger.error(f"Failed to convert {pdf_file.name}: {str(e)}")
+                self.logger.error("Failed to convert %s: %s", pdf_file.name, str(e))
                 # Continue with other files even if one fails
                 continue
-
-        self.logger.info(f"Successfully converted {len(converted_files)} files")
+        self.logger.info("Successfully converted %d files", len(converted_files))
         return converted_files
 
     def get_supported_extensions(self) -> list[str]:

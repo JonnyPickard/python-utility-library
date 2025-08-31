@@ -126,7 +126,9 @@ class TestPDFToMarkdownConverter:
     @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
-    def test_convert_folder_success(self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered):
+    def test_convert_folder_success(
+        self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered
+    ):
         """Test successful folder conversion."""
         # Setup mocks
         mock_create_model_dict.return_value = {"models": "dict"}
@@ -230,7 +232,9 @@ class TestPDFToMarkdownConverter:
     @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
-    def test_converter_loading_lazy(self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered):
+    def test_converter_loading_lazy(
+        self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered
+    ):
         """Test that converter is loaded lazily."""
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
