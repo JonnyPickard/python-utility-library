@@ -170,3 +170,12 @@ cython_debug/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# PDF conversion directories - keep structure but ignore content
+# These contain project-specific PDFs and converted files that are private
+modules/pdf_to_markdown/inputs/*
+modules/pdf_to_markdown/outputs/*
+
+# Keep directory structure with .gitkeep files
+!modules/pdf_to_markdown/inputs/.gitkeep
+!modules/pdf_to_markdown/outputs/.gitkeep
