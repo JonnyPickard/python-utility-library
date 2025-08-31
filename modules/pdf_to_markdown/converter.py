@@ -3,17 +3,17 @@ PDF to Markdown converter using the Marker library.
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 import logging
 
 try:
     from marker.converters.pdf import PdfConverter
     from marker.models import create_model_dict
+    from marker.output import text_from_rendered
 except ImportError:
     raise ImportError(
         "marker-pdf library is required. Install with: pip install marker-pdf"
     )
-
 
 class PDFToMarkdownConverter:
     """
@@ -38,6 +38,20 @@ class PDFToMarkdownConverter:
         if self._converter is None:
             self.logger.info("Loading Marker PDF converter...")
             try:
+                # Set up GPU acceleration if available
+                import os
+                try:
+                    import torch
+                    if torch.cuda.is_available():
+                        os.environ["TORCH_DEVICE"] = "cuda"
+                        device_name = torch.cuda.get_device_name()
+                        vram = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+                        self.logger.info(f"Using GPU acceleration: {device_name} ({vram:.1f}GB VRAM)")
+                    else:
+                        self.logger.info("CUDA not available, using CPU")
+                except ImportError:
+                    self.logger.info("PyTorch not available, using CPU")
+
                 # Create model artifacts dict
                 artifact_dict = create_model_dict()
                 self._converter = PdfConverter(
@@ -81,9 +95,9 @@ class PDFToMarkdownConverter:
         try:
             converter = self._get_converter()
             # Convert PDF to document
-            document = converter(str(pdf_path_obj))
-            # Render to markdown
-            markdown_text = document.render()
+            rendered = converter(str(pdf_path_obj))
+            # Extract markdown text from rendered output
+            markdown_text, _, _ = text_from_rendered(rendered)
 
             # Write the markdown content to file
             output_path_obj.parent.mkdir(parents=True, exist_ok=True)

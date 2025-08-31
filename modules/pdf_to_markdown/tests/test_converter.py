@@ -36,19 +36,20 @@ class TestPDFToMarkdownConverter:
         with pytest.raises(FileNotFoundError):
             self.converter.convert_single_file("non_existent.pdf")
 
+    @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
     def test_convert_single_file_success(
-        self, mock_create_model_dict, mock_pdf_converter
+        self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered
     ):
         """Test successful single file conversion."""
         # Setup mocks
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
-        mock_document = MagicMock()
-        mock_document.render.return_value = "# Test Markdown"
-        mock_converter_instance.return_value = mock_document
+        mock_rendered = MagicMock()
+        mock_converter_instance.return_value = mock_rendered
         mock_pdf_converter.return_value = mock_converter_instance
+        mock_text_from_rendered.return_value = ("# Test Markdown", None, None)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create a dummy PDF file
@@ -63,20 +64,22 @@ class TestPDFToMarkdownConverter:
             assert Path(output_path).suffix == ".md"
             assert Path(output_path).read_text(encoding="utf-8") == "# Test Markdown"
             mock_converter_instance.assert_called_once()
+            mock_text_from_rendered.assert_called_once_with(mock_rendered)
 
+    @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
     def test_convert_single_file_with_custom_output(
-        self, mock_create_model_dict, mock_pdf_converter
+        self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered
     ):
         """Test conversion with custom output path."""
         # Setup mocks
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
-        mock_document = MagicMock()
-        mock_document.render.return_value = "# Custom Output"
-        mock_converter_instance.return_value = mock_document
+        mock_rendered = MagicMock()
+        mock_converter_instance.return_value = mock_rendered
         mock_pdf_converter.return_value = mock_converter_instance
+        mock_text_from_rendered.return_value = ("# Custom Output", None, None)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create a dummy PDF file
@@ -120,17 +123,18 @@ class TestPDFToMarkdownConverter:
             assert result == []
             assert output_folder.exists()  # Should still create output folder
 
+    @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
-    def test_convert_folder_success(self, mock_create_model_dict, mock_pdf_converter):
+    def test_convert_folder_success(self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered):
         """Test successful folder conversion."""
         # Setup mocks
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
-        mock_document = MagicMock()
-        mock_document.render.return_value = "# Converted Content"
-        mock_converter_instance.return_value = mock_document
+        mock_rendered = MagicMock()
+        mock_converter_instance.return_value = mock_rendered
         mock_pdf_converter.return_value = mock_converter_instance
+        mock_text_from_rendered.return_value = ("# Converted Content", None, None)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             input_folder = Path(temp_dir) / "input"
@@ -184,19 +188,20 @@ class TestPDFToMarkdownConverter:
             assert existing_output.read_text(encoding="utf-8") == "# Existing Content"
             mock_pdf_converter.assert_not_called()
 
+    @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
     def test_convert_folder_overwrite_existing(
-        self, mock_create_model_dict, mock_pdf_converter
+        self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered
     ):
         """Test folder conversion overwrites existing files when overwrite=True."""
         # Setup mocks
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
-        mock_document = MagicMock()
-        mock_document.render.return_value = "# New Content"
-        mock_converter_instance.return_value = mock_document
+        mock_rendered = MagicMock()
+        mock_converter_instance.return_value = mock_rendered
         mock_pdf_converter.return_value = mock_converter_instance
+        mock_text_from_rendered.return_value = ("# New Content", None, None)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             input_folder = Path(temp_dir) / "input"
@@ -222,16 +227,17 @@ class TestPDFToMarkdownConverter:
             assert existing_output.read_text(encoding="utf-8") == "# New Content"
             mock_converter_instance.assert_called_once()
 
+    @patch("modules.pdf_to_markdown.converter.text_from_rendered")
     @patch("modules.pdf_to_markdown.converter.PdfConverter")
     @patch("modules.pdf_to_markdown.converter.create_model_dict")
-    def test_converter_loading_lazy(self, mock_create_model_dict, mock_pdf_converter):
+    def test_converter_loading_lazy(self, mock_create_model_dict, mock_pdf_converter, mock_text_from_rendered):
         """Test that converter is loaded lazily."""
         mock_create_model_dict.return_value = {"models": "dict"}
         mock_converter_instance = MagicMock()
         mock_pdf_converter.return_value = mock_converter_instance
-        mock_document = MagicMock()
-        mock_document.render.return_value = "# Test"
-        mock_converter_instance.return_value = mock_document
+        mock_rendered = MagicMock()
+        mock_converter_instance.return_value = mock_rendered
+        mock_text_from_rendered.return_value = ("# Test", None, None)
 
         converter = PDFToMarkdownConverter()
         assert converter._converter is None

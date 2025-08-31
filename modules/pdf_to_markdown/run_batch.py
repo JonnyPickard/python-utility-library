@@ -71,7 +71,7 @@ def main():
             str(inputs_path), str(outputs_path), overwrite=overwrite_flag
         )
 
-        print("✅ Batch conversion completed!")
+        print("✓ Batch conversion completed!")
         print(f"Successfully converted {len(converted_files)} file(s):")
 
         for converted_file in converted_files:
@@ -83,7 +83,7 @@ def main():
             print(f"\nSkipped {skipped} file(s) (already existed or failed)")
 
     except Exception as e:
-        print(f"❌ Batch conversion failed: {str(e)}")
+        print(f"✗ Batch conversion failed: {str(e)}")
         return
 
     print("\n" + "=" * 50)

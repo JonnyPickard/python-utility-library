@@ -57,10 +57,10 @@ def main():
 
     try:
         result_path = converter.convert_single_file(str(selected_pdf), str(output_file))
-        print("✅ Conversion successful!")
+        print("✓ Conversion successful!")
         print(f"Output saved to: {result_path}")
     except Exception as e:
-        print(f"❌ Conversion failed: {str(e)}")
+        print(f"✗ Conversion failed: {str(e)}")
         return
 
     print("\n" + "=" * 50)
